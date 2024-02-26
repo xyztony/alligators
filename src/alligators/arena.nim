@@ -25,7 +25,6 @@ proc arenaAlloc*(a: ptr Arena, size: int): pointer {.discardable.} =
   if isNil(a[].`end`):
     assert(isNil(a[].begin))
     let capacity = if REGION_CAP_DEF < size: size else: REGION_CAP_DEF
-    echo "CREATING NEW REGION FOR THE END"
     a[].`end` = newRegion(capacity)
     a[].begin = a[].`end`
 
@@ -35,7 +34,6 @@ proc arenaAlloc*(a: ptr Arena, size: int): pointer {.discardable.} =
   if a[].`end`.count + size > a[].`end`.capacity:
     assert(isNil(a[].`end`.next))
     let capacity = if REGION_CAP_DEF < size: size else: REGION_CAP_DEF
-    echo "CREATING NEW REGION FOR THE NEXT OF THE END"
     a[].`end`.next = newRegion(capacity)
     a[].`end` = a[].`end`.next
 
@@ -59,7 +57,6 @@ proc arenaReset*(a: ptr Arena) =
 proc arenaFree*(a: ptr Arena) =
   var r: ptr Region = a[].begin
   while not isNil(r):
-    echo "Freeing Region"
     var regionToFree: ptr Region = r
     r = r[].next
     freeRegion(regionToFree)
